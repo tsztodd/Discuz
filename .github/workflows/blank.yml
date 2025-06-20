@@ -1,4 +1,4 @@
-name: Gitee DiscuzX - Upload upload Directory
+name: Gitee DiscuzX - Upload upload Directory with Date
 
 on:
   workflow_dispatch: # 手动触发
@@ -14,12 +14,16 @@ jobs:
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
 
+      - name: Get Current Date
+        id: date
+        run: echo "date=$(date +%Y%m%d)" >> $GITHUB_ENV
+
       - name: Clone from Gitee
         run: |
           git clone https://gitee.com/Discuz/DiscuzX.git discuzx
 
-      - name: Upload upload directory as Artifact
+      - name: Upload upload directory with date
         uses: actions/upload-artifact@v4
         with:
-          name: DiscuzX-upload
+          name: DiscuzX-upload-${{ env.date }}
           path: discuzx/upload/
