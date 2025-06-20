@@ -1,0 +1,31 @@
+name: Gitee DiscuzX ZIP Build
+
+on:
+  workflow_dispatch: # 支持手动触发
+  schedule:
+    - cron: '0 0 * * *' # 每天 UTC 时间 0 点运行（北京时间 8:00）
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Git Config
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+
+      - name: Clone from Gitee
+        run: |
+          git clone https://gitee.com/Discuz/DiscuzX.git discuzx
+          cd discuzx
+
+      - name: Create ZIP archive
+        run: |
+          cd discuzx
+          zip -r ../DiscuzX-$(date +%Y%m%d).zip .
+
+      - name: Upload ZIP as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: DiscuzX-source
+          path: DiscuzX-*.zip
