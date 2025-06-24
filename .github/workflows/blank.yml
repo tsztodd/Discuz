@@ -24,8 +24,26 @@ jobs:
         run: |
           git clone https://gitee.com/Discuz/DiscuzX.git discuzx
 
-      - name: Upload upload directory with Beijing date
-        uses: actions/upload-artifact@v4
+      - name: Archive Upload Directory
+        run: |
+          cd discuzx && zip -r ../DiscuzX-upload-${{ env.date }}.zip upload/
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: DiscuzX-upload-${{ env.date }}
-          path: discuzx/upload/
+          tag_name: release-${{ env.date }}
+          release_name: DiscuzX Upload - ${{ env.date }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Asset to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./DiscuzX-upload-${{ env.date }}.zip
+          asset_content_type: application/zip
