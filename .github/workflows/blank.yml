@@ -5,6 +5,9 @@ on:
   schedule:
     - cron: '0 16 * * *' # 北京时间 00:00
 
+permissions:
+  contents: write  # 需要写入权限来创建release
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,20 +33,13 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: release-${{ env.date }}
-          release_name: DiscuzX Upload - ${{ env.date }}
+          name: DiscuzX Upload - ${{ env.date }}
           draft: false
           prerelease: false
-
-      - name: Upload Asset to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./DiscuzX-upload-${{ env.date }}.zip
-          asset_content_type: application/zip
+          files: |
+            DiscuzX-upload-${{ env.date }}.zip
